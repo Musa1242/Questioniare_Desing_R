@@ -1,0 +1,375 @@
+---
+title: "  Trust of people in legal system and government elements and its impact on attachment of people to the country"
+author: "Musa Talha Ünal"
+date: "2022-03-21"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 3
+    number_sections: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+  word_document:
+    toc: yes
+    toc_depth: '3'
+biblio-style: apalike
+---
+
+```{css, echo=FALSE}
+.CSSoutput {
+  background-color: white;
+  border: 1px solid black;
+}
+```
+```{r setup chunks, include=FALSE}
+knitr::opts_chunk$set(class.source = "CSSoutput",
+                      eval = TRUE, echo = TRUE, include = TRUE,      
+                      fig.align='center', fig.show='asis',
+                      size='footnotesize')
+
+```
+
+
+
+
+
+
+
+```{r setup, include=FALSE}
+# reset R environment
+rm(list=ls(all=TRUE))
+graphics.off()
+
+################
+# install and load packages
+################
+#  if packages are not already installed, the function will install and activate them
+usePackage <- function(p) {
+  if (!is.element(p, installed.packages()[,1]))
+    install.packages(p, dep = TRUE, repos = "http://cran.us.r-project.org")
+  require(p, character.only = TRUE)
+}
+usePackage("mvtnorm") 
+usePackage("plotly") 
+usePackage("MASS") 
+usePackage("moments") # skewness, kurtosis # usePackage("moments")
+usePackage("tidyverse") 
+usePackage("foreign")
+usePackage("DT") # HTML table widget
+usePackage("haven") # load SPSS, ... data 
+usePackage("tidyverse") # data cleaning and summarizing
+usePackage("psych") # psychometric analysis (EFA) ## psychometric analysis
+usePackage("stargazer") # create tables
+usePackage("car")
+rm(usePackage)
+
+```
+
+
+
+```{r loaddata, include=FALSE}
+
+## load data
+dat2 <- read_csv("C:/Users/mtu10/OneDrive/Desktop/ESS8e02_2.csv")
+
+
+## data preparation
+dat2$proddate <- NULL
+dat2$cname <- NULL
+dat2$cedition <- NULL
+dat2$cseqno <- NULL
+dat2$name <- NULL
+dat2$essround <- NULL
+dat2$edition <- NULL
+dat2$idno <-NULL
+dat2$cntry <- as.factor(dat2$cntry)
+#renaming correcting values
+
+dt <- subset(dat2, ppltrst<=10 & pplfair<=10 & pplhlp<=10 & gndr<3 & atchctr<=10 & atcherp <=10 & trstlgl <=10 & trstplc<=10 & trstplt<=10 & trstep<=10 & trstun<=10 & trstprt<=10 & trstprl<=10)
+dt$gndr <- cut(x = dt$gndr, breaks = 2, labels = c("Male", "Female"))
+dt$gndr <- factor(dt$gndr, ordered = TRUE)#
+
+#independent variant grouping
+Rus <- dt[dt$cntry=="RU",]
+Ger <- dt[dt$cntry=="DE",]
+A = data.frame(Rus)
+B = data.frame(Ger)
+Countries <- rbind(A, B)
+
+
+
+```
+
+
+
+
+
+# Introduction
+
+ People feel a different level of attachment to their country. Some of them are attached more emotionally than others, like patriots, and others are attached less. Many factors influence the attachment level of people to their country. The trust might be one of these factors. Trust of people to the legal system, politicians, and other state elements might affect the attachment level of people to the country. From the data of the 2016 European social survey, I will first examine these trust factors with attachment level in every country in the survey and specifically people in Germany and Russia to see if there is a correlation with these factors. Then, I will test whether people's trust in state elements, specifically in the legal system, influences the attachments level of people to their country or not. Additionally, I will investigate whether there is a significant difference between Germans and Russians about their trust level in their legal system and attachment level to their country, and interaction between trust level and attachment level.
+
+
+
+
+
+
+# Background
+ Attachment level- emotional connection or so-called patriotism to the country depends on many factors. Ferenzi(2013), in her paper, examined many factors about the attachment of people to place and nation. She did not directly compare trust levels of participants toward the legal system and government with attachment level, but she mentioned the effect of environmental psychology and emotional connection to the attachment of people to the country and the nation; therefore, trust in the legal system and government features might be significance to examine to see a correlation with attachment level of people to their country. For example, when people believe their government and politicians are not fair and corrupted, they might feel a less emotional connection to their country. To see a relation between them, I thought to examine the European Social Survey 2016, in which there are many participants, and they might represent the population of their country as a good sample and use correlation tests on these data to see if a correlation between trust and attachment might be claimed or not.
+...
+
+
+# Methods
+ Firstly, data are from European Social Survey 2016 which there are 44387 participants from 23 countries in Europa and 530 variables in the survey. I excluded some variables which are not helpful for me. I examined country variables as numeric and others as numeric. I chose excluded the answers 77, 88, 99 because these answers do not represent an actual value, but they represent those participants who did not answer the question. Therefore, I excluded them to prevent their influences on the plots and correlations tests. Also, I chose my variables that responded between 1-10 to compare the values without misunderstanding. If I decided on some variables between 1-8 and others between 1-100, then plots and correlation tests will not show precise results.
+
+Furthermore, I also used specific data from Germany and Russia to see the differences between these countries. I created the "Countries" data frame with 4475 participants and 534 variables (four of them I made).
+Additionally, for the descriptive data analysis, I used plots, histograms, ggplot, and boxplot for descriptive analysis. Furthermore, I used residual-fitted value graphs, Q-Q graphs, and probability graphs to analyze regression. For the inferential statistics, I used the Pearson correlation test, t-test, and correlation plot to see a correlation between trust in the legal system and attachment to the country and a comparison between Germans and Russians about it. Also, I did an ANOVA test to see a correlation between trust of people in the legal system and the attachment level of people to their country and see the interaction between trust level and attachment level depend on the country to test the relation between country and attachment depending on trust level or not. I used these methods according to Field et al. (2013, p. 205-312). 
+
+
+## Hypothesis
+ I created two H0 hypotheses because I want to test my actual H1 hypothesis in two steps to see it more precisely. First, I made my hypothesis and tested them according to Mourougan and Sethuraman (2017, p. 34-40).
+
+1.H0: More people's trust in the legal system, politicians, police, parliament, and other government features do not significantly influence people's attachment to their country. (In Germany and Russia)
+1.H1: More trust in people in the legal system, politicians, police, parliament, and other government features significantly influences people's attachment level to their country. (In Germany and Russia)
+
+2.H0: People from Germany have more trust in the legal system, politicians, police, parliament, and other government features than people from Russia; therefore, people from Germany have less attachment to their country than Russian people.
+2.H1: People from Germany have more trust in the legal system, politicians, police, parliament, and other government features than people from Russia; therefore, people from Germany have more attachment to their country than Russian people.
+
+
+# Results
+
+##Data preperation
+```{r}
+#Grouping values
+vars_trst <- str_subset(string = colnames(Countries), pattern = "^trst")
+vars_atch <- str_subset(string = colnames(Countries), pattern = "^atch")
+
+## create mean scores and standart deviation
+
+sel_var <- c("trstlgl", "trstplc", "trstplt", "trstep", "trstun", "trstprt", "trstprl")
+Countries$mean_trst <- rowMeans(x = Countries[, sel_var], na.rm = TRUE)
+
+sel_var <- str_detect(string = colnames(Ger), pattern = "^trst")
+Ger$mean_trst <- rowMeans(x = Ger[, sel_var], na.rm = TRUE)
+
+sel_var <- str_detect(string = colnames(Rus), pattern = "^trst")
+Rus$mean_trst <- rowMeans(x = Rus[, sel_var], na.rm = TRUE)
+# >
+sel_var <- str_detect(string = colnames(Countries), pattern = "^atch")
+Countries$mean_attch <- rowMeans(x = Countries[, sel_var], na.rm = TRUE)
+
+sel_var <- str_detect(string = colnames(Ger), pattern = "^atch")
+Ger$mean_attch <- rowMeans(x = Ger[, sel_var], na.rm = TRUE)
+
+sel_var <- str_detect(string = colnames(Rus), pattern = "^atch")
+Rus$mean_attch <- rowMeans(x = Rus[, sel_var], na.rm = TRUE)
+
+Countries$sd_attch <- Countries %>%
+  select(matches(match = "^atch")) %>%
+  apply(.,1, sd, na.rm = TRUE)
+Countries$sd_trst <- Countries %>%
+  select(matches(match = "^trst")) %>%
+  apply(.,1, sd, na.rm = TRUE)
+```
+
+## data analysis descriptive
+```{r}
+#Plots
+
+ggplot(data = Countries) + geom_boxplot(mapping = aes(x= cntry ,y= atchctr, ))+theme(legend.position="none")+labs(y=" Attachment to the country")
+ggplot(data = Countries) + geom_boxplot(mapping = aes(x= cntry ,y= trstlgl, ))+theme(legend.position="none")+labs(y=" Trust to the legal system")
+
+#>
+ggplot(Countries,
+       aes(x = mean_attch,
+           y = mean_trst,
+           color = cntry)) +
+  geom_point(size = .9,
+             alpha = .3, color = "grey") +
+  geom_smooth(method = "lm") +
+  theme_bw() +
+  labs(x = "Independent variable",
+       y = "Dependent variable",
+       color = "Moderator")
+
+
+```
+ The first plot shows two boxplots that show attachment levels of the German and Russian people to their country. Their median values are almost identical, and Russian people's interquartile range value is wider than the German one. It means that Russian people have quite different opinions than German people and higher variability.
+ 
+ The second plot shows boxplots that show the trust levels of German and Russian people in their legal system. German median value is higher than the Russian one, which means Germans mostly have higher trust than Russians. They have a similar interquartile range. It shows identical variability among German and Russian people.
+ 
+ The third plot represents a correlation between attachment levels and the trust level of German and Russian people and compares their mean and increase.
+
+ 
+### Making table and see correlation
+```{r, results='asis'}
+
+tmp <- cor(Countries[, c(vars_atch, vars_trst)], use = "pairwise.complete.obs",
+           method = "pearson")
+tmp
+
+
+stargazer::stargazer(tmp, summary = FALSE,
+                     font.size = "footnotesize", column.sep.width = "-5pt",
+                     type = "html", out = "cor ppl scl.html", digits = 2)
+
+stargazer(tmp) 
+
+psych::corPlot(Countries[, c(vars_atch, vars_trst)])
+
+```
+ It shows that the factor of attachment level to the country and attachment level of to the Europa is not correlated; therefore, it is better to examine attachment level of to the country separately, not as a group, even though both countries belong to the Europa.
+ 
+Additionally, it shows that trust values are mostly correlated with each other, but some of them have low correlation. Most trust levels can be grouped, but it is better to investigate specifically trust levels in the legal system. Therefore, I changed my Hypotheses only for trust in the legal system and attachment to their country, not as a whole group to see more precise values.
+
+
+
+
+## data analysis main
+### Correlation tests
+```{r}
+
+cor.test(dt$atchctr, dt$trstlgl, use = "complete")
+
+cor.test(Countries$mean_attch, Countries$mean_trst, use = "complete")
+
+cor.test(Countries$atchctr, Countries$trstlgl, use = "complete")
+
+
+t.test(Countries$mean_trst ~ Countries$cntry)
+t.test(Countries$mean_attch ~ Countries$cntry)
+
+
+res.aov1 <- aov(atchctr ~ trstlgl + cntry, data = Countries)
+summary(res.aov1)
+
+
+res.aov3 <- aov(atchctr ~ trstlgl + cntry + trstlgl:cntry, data = Countries)
+summary(res.aov3)
+```
+
+
+### Regression tests
+```{r}
+plot(Countries$atchctr, Countries$trstlgl, ylab = "Trust", xlab = "attachment")
+abline(lm(formula = Countries$trstlgl ~ Countries$atchctr), col = "red")
+
+plot(Countries$mean_attch, Countries$mean_trst, ylab = "Trust", xlab = "attachment")
+abline(lm(formula = Countries$mean_trst ~ Countries$mean_attch), col = "red")
+
+
+lm1 <- lm(formula = atchctr  ~ trstlgl, data = Countries)
+lm1
+summary(lm1)
+
+
+par(mfrow=c(2,2))  # set 2 rows and 2 column plot layout
+plot(lm1)
+
+
+unstandardizedPredicted <- predict(lm1)
+unstandardizedResiduals <- resid(lm1)
+#get standardized values
+standardizedPredicted <- (unstandardizedPredicted - mean(unstandardizedPredicted)) / sd(unstandardizedPredicted)
+standardizedResiduals <- (unstandardizedResiduals - mean(unstandardizedResiduals)) / sd(unstandardizedResiduals)
+#create standardized residuals plot
+plot(standardizedPredicted, standardizedResiduals, main = "Standardized Residuals Plot", xlab = "Standardized Predicted Values", ylab = "Standardized Residuals")
+#add horizontal line
+abline(0,0)
+
+#create residuals histogram
+hist(standardizedResiduals, freq = FALSE)
+#add normal curve
+curve(dnorm, add = TRUE)
+
+#get probability distribution for residuals
+probDist <- pnorm(standardizedResiduals)
+#create PP plot
+plot(ppoints(length(standardizedResiduals)), sort(probDist), main = "PP Plot", xlab = "Observed Probability", ylab = "Expected Probability")
+#add diagonal line
+abline(0,1)
+
+
+#linear regression
+
+lm_moderator <- lm(formula = mean_trst ~ cntry*mean_attch  + cntry,
+          data = Countries)
+summary(lm_moderator)
+
+lm2 <- lm(formula = atchctr ~ trstlgl + cntry, data = Countries)
+summary(lm2)
+
+par(mfrow=c(2,2))  # set 2 rows and 2 column plot layout
+plot(lm2)
+
+
+```
+
+
+# Discussion
+
+## Hypothesis tests results and correlation analysis
+<b>Pearson test results:</b>
+ I used the Pearson test to see a significant difference between numeric values. Firstly, I tested the attachment level of people to their country (independent variable) with a trust level of people in their legal system (dependent variable) in every country which participated in the survey to see if there is a difference between counties as a whole, afterward tested countries only as Germany and Russia. T value is 28.80, and if the t value is far away from zero, this would indicate we could reject the null hypothesis (Field et al., 2013, p. 205-312). Additionally, the p-value is way smaller than 0.05; therefore, this test shows a significant difference between the trust level of people in their legal system and the attachment level of people in their country in 23 countries in the survey. It shows a correlation between these two variables, but the correlation coefficient is 0.14, corresponding to a weak effect (Fenn, 2022, p. 111). But due to the large sample size, the correlation coefficient might be influenced. (Hole, 2012, p.1-9) If the sample size is large, it gives a small correlation between two variables representing the population's actual state of affairs. Therefore, effect size should be controlled with the r square value and regression test. When this test is made only between Germans and Russians, it gives a similar result. P-value is way smaller than 0.05 and t value 8.28, which shows a significant difference, and therefore the first H0 can be rejected, and the first H1 can be accepted. But this also shows a 0.12 correlation coefficient which is weak to medium and probably affected by sample size; therefore, its effect size needs to be tested because a larger sample size shows a lower correlation coefficient. The second test shows mean differences, gives a stronger correlation, and shows that sample size could affect correlation tests.
+ 
+<b>T.test result:</b>
+ They indicate a significant difference for the mean of trusts value (group of every trust value) between Russians and Germans and the same for the mean of attachment values (group of every attachment value) because the p-value is smaller than 0.05. 
+
+<b>ANOVA test result:</b>
+ I did ANOVA test (Field et al., 2013, p. 398-461) to see a correlation between trust in the legal system (dependent variable), attachment level to the country (independent variable), and country (Germany-Russia, independent variable). This test indicates that these variables are statistically significant separately; p-values are smaller than 0.05 (2e-16 and 0.001). Still, the interaction between trstlgl:cntry is 0.07 (not significant), indicating that the relationships between county and attachment do not depend on trust. Other variables might influence this relationship; therefore, the second H0 cannot be rejected, and the second H1 could not be accepted. 
+
+
+
+
+## Regression analysis
+
+ The relationship between trust level and attachment level shows linearity and homogeneity as seen in the plots, and it is a normal distribution (Svetina et al., 2009). First regression tests indicate that Intercept value as 4.35 and its slope as 0.13, standard error coefficient as 0.01, and residual standard error as 2.66. (Rego, 2015) Intercept value means that in order to reach average attachment level, it is needed to reach 4.35 mean trust level, and their slope is 0.13; in other words, for every one level attachment level increase, it requires to increase 0.13 trust level. P-values show indicates that these values have statistical significance. The standard error coefficient shows that the average amount that the coefficient estimates vary from our response variable's actual average value (Rego, 2015). If we rerun the model, this value shows the expected difference between model testing; in my case, it is 0.01 and low expected difference because the sample size is large. The residual standard error demonstrates the quality of linear regression (Field et al., 2013, p. 258-276). The Residual Standard Error is the average amount that the response (trust) will deviate from the true regression line. Intercept is 4.35, and R. standard error is 2.66; therefore, the percentage error is around 61%. A high number of residual standard errors means an untrustworthy population representation. The F statistic shows that the larger the F value, the stronger the relationship between variables. F statistic, t-value, and p-value indicate that the first H0 can be rejected. In this test, the F statistic is 68.71, showing statistical significance. 
+ 
+Lastly, the R² value measures the effect size of variables (Hole,2012, p.1-9). This test is 0.01 (1%), which is very low. R² provides a measure of how well the model fits the actual data (Rego, 2015). R² is used to assess the practical importance of the correlation of the variables (Hole, 2012, p. 1-9). This test shows a weak relationship in a practical sense, knowledge of one of the variables accounts for only 1% of the variance in the other. Although trust in the legal system and attachment level of people to their country have statistically significant value, it has a very low effect. This correlation is useless for predictive purposes because other variables cause 99% of the effect.
+
+I did not examine other regression tests because the ANOVA test indicated that the second H0 cannot be rejected; therefore, it is not necessary to examine these values with the regression test.
+
+
+
+## Errors
+
+ The second H0 can be investigated Type II error (Fenn, 2022, p. 29-30), which is H0 is false but could not be rejected. However, the sample size is large, and because of that, it has high reliability and low error chance. Therefore, there is probably no or low Type II error, and the second H0 could not be rejected.
+
+## Quality criteria and reliability
+
+ Indicator quality criteria are credibility, relevance, estimator quality, and data quality (Fenn, 2022, p. 25-26). European social survey generally has credibility. Data quality should be investigated from these criteria because it might have validity and confidentiality problems. These data are from 2016, and when it is assessed again, it can give another result. According to freedom house, in 2021, Russia is not free; therefore, Russians might feel under disclosure risk about their trust to state features and attachment to their country. Due to these reasons, the sample might have validity and security problem which influences data quality.
+
+
+
+
+
+# Conclusion
+
+ My research question was about to see the effect of the trust factors to state elements on the attachment level of the people. Firstly, from the correlation plot, I saw that using only trust of people in the legal system and attachment level to their country variables gives more precise results and continues to operate like that. Secondly, the correlation tests indicate the rejection of the first H0 and acceptance of the first H1, but the second H0 could not be rejected, and we could not accept the second H1. However, the low R² value first H1 hypothesis has low practical importance and is not useful for future predictive purposes due to the low R² value. Lastly, the data quality might be problematic due to validity and security criteria.
+ 
+ In conclusion, although trust of people in the legal system and attachment of people to their country has correlation and there is a statistically significant difference, due to small effect size and suspicion toward data quality, the correlation between these two variables requires future investigation to claim a causality and higher correlation between these factors.
+
+
+
+
+# References
+
+    
+Ferenczi, N., & Marshall, T. C. (2013). Exploring attachment to the "homeland" and its association with heritage culture identification. PloS one, 8(1), e53872.<https://doi.org/10.1371/journal.pone.0053872>
+
+Fenn, J. (2022), Lecture 3 Repetition Statistics, 111-112
+
+Fenn, J. (2022), Lecture 4 Test Theory, 25-26
+
+Fenn, J. (2022), Lecture 5 Statistical Models 29-30
+
+Field, A., Miles, J., & Field, Z. (2012b). Discovering Statistics Using R (1st ed.). SAGE Publications Ltd., Chapter 6;7;10, 205-312; 398-461 <https://doi.org/10.1111/insr.12011_21>
+
+Hole, G. (2012). Eight things you need to know about interpreting correlations, 1-9 <http://users.sussex.ac.uk/~grahamh/RM1web/Eight%20things%20you%20need%20to%20know%20about%20interpreting%20correlations.pdf>
+
+Mourougan, S., & Sethuraman, D. K. (2017). Hypothesis Development and Testing. IOSR Journal of Business and Management, 19(05), 34–40. <https://doi.org/10.9790/487x-1905013440>
+
+Svetina, D., & Levy, R. (2009). Regression Assumptions, Multiple Regression and Correlation Methods [Protected Website], Avaliable at: <http://rtutorialseries.blogspot.com/2009/12/r-tutorial-series-graphic-analysis-of.html> [accessed 21 March 2022].
+
+Rego, F., 2015. QUICK GUIDE: INTERPRETING SIMPLE LINEAR MODEL OUTPUT IN R. [Blog] Available at: <https://feliperego.github.io/blog/2015/10/23/Interpreting-Model-Output-In-R> [Accessed 21 March 2022].
+
